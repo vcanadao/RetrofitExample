@@ -1,14 +1,17 @@
 package victordev.es.ejemploretrofit.io.API;
 
-import retrofit.RestAdapter;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import victordev.es.ejemploretrofit.io.API.interfaces.CommentsApiInterface;
+import victordev.es.ejemploretrofit.io.API.models.Posts;
 
 /**
  * Created by victor on 18/9/16.
  */
 
 public class ApiRest {
-    public static String BASE_URL = "https://jsonplaceholder.typicode.com";
+    //EN RETROFIT 2.0 LA URL DEBE ACABAR CON /
+    public static String BASE_URL = "https://jsonplaceholder.typicode.com/";
     private static CommentsApiInterface sCommentsApiInterface;
 
     /**
@@ -16,12 +19,20 @@ public class ApiRest {
      * @return
      */
     public static CommentsApiInterface getsCommentsApiInterface() {
+
         if (sCommentsApiInterface == null) {
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(BASE_URL)
+            //Declaramos nuestro objeto Retrofit y le indicamos el endpoint
+            //y con que vamos a hacer el parse de la información finalizamos con build
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
-            sCommentsApiInterface = restAdapter.create(CommentsApiInterface.class);
+            //Declaramos la interfaz y dejamos que retrofit la instancie
+            CommentsApiInterface commentsApiInterface = retrofit.create(CommentsApiInterface.class);
+
+            sCommentsApiInterface = commentsApiInterface;
         }
         return sCommentsApiInterface;
     }

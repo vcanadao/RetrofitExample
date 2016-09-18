@@ -1,10 +1,12 @@
 package victordev.es.ejemploretrofit.presenters;
 
+import java.io.IOException;
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import victordev.es.ejemploretrofit.interfaces.EjemploRetrofitPresenterInterface;
 import victordev.es.ejemploretrofit.interfaces.EjemploRetrofitViewInterface;
 import victordev.es.ejemploretrofit.io.API.ApiRest;
@@ -25,17 +27,26 @@ public class EjemploRetrofitPresenter implements EjemploRetrofitPresenterInterfa
     public void loadPosts() {
         mView.showLoadingWindow();
 
-        ApiRest.getsCommentsApiInterface().loadComments(new Callback<List<Posts>>() {
+
+
+        //Hacemos el objeto tipo llamada
+        final Call<List<Posts>> responseCall = ApiRest.getsCommentsApiInterface().loadComments();
+
+        //Hacemos la llamada asíncrona. En este caso declaré el callback dentro
+        //del mismo método. Podríamos haber creado una clase aparte
+        //o implementar la interfaz en esta misma clase.
+
+        responseCall.enqueue(new Callback<List<Posts>>() {
             @Override
-            public void success(List<Posts> postses, Response response) {
+            public void onResponse(Call<List<Posts>> call, Response<List<Posts>> response) {
                 mView.hideLoadingWindow();
-                mView.loadAdapter(postses);
+                mView.loadAdapter(response.body());
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<List<Posts>> call, Throwable t) {
                 mView.hideLoadingWindow();
-                mView.showErrorMessage(error.toString());
+                mView.showErrorMessage(t.getMessage());
             }
         });
     }

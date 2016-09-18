@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">EjemploRetrofit</string>
+    <string name="obtener_posts">Obtener posts</string>
+</resources>
